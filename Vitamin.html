@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Study Smart — Vitamins &amp; Amino Acids</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EEF1EA;
+    --paper-panel:#FBFAF5;
+    --ink:#1C2B2E;
+    --ink-soft:#4A5B58;
+    --line:#CDD5C6;
+
+    --c-overview:#2E7C8C;
+    --c-overview-soft:#DCEAEC;
+    --c-diagrams:#C97A34;
+    --c-diagrams-soft:#F5E6D3;
+    --c-map:#4F7A5A;
+    --c-map-soft:#DEEBE0;
+    --c-cards:#C9527B;
+    --c-cards-soft:#F6DFE7;
+    --c-quiz:#6B5B95;
+    --c-quiz-soft:#E5E0EF;
+
+    --aa-nonpolar:#C9527B;
+    --aa-aromatic:#B8863B;
+    --aa-polar:#2E7C8C;
+    --aa-acidic:#B0472F;
+    --aa-basic:#4F7A5A;
+    --aa-special:#6B5B95;
+
+    --radius-s:4px;
+    --radius-m:10px;
+    --shadow-1: 0 1px 0 rgba(28,43,46,.08);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', system-ui, sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  h1,h2,h3,h4{font-family:'IBM Plex Serif', Georgia, serif; margin:0; font-weight:600; letter-spacing:-.01em;}
+  p{margin:0;}
+  button{font-family:inherit;}
+  ::selection{background:var(--c-overview-soft);}
+
+  /* ---------- App shell ---------- */
+  .app{display:flex; min-height:100vh;}
+
+  .rail{
+    width:230px; flex-shrink:0;
+    background:var(--ink);
+    color:#EEF1EA;
+    display:flex; flex-direction:column;
+    padding:26px 18px 18px;
+    position:sticky; top:0; height:100vh;
+  }
+  .brand{display:flex; align-items:center; gap:10px; margin-bottom:34px; padding-left:2px;}
+  .brand svg{flex-shrink:0;}
+  .brand-text h1{font-size:19px; color:#F4F3EC; line-height:1.05;}
+  .brand-text span{display:block; font-size:11px; color:#9FB0AC; margin-top:3px; letter-spacing:.02em;}
+
+  .navlist{display:flex; flex-direction:column; gap:4px; flex:1;}
+  .navbtn{
+    display:flex; align-items:center; gap:11px;
+    text-align:left; background:transparent; border:none;
+    color:#C7D2CD; padding:11px 12px; border-radius:8px;
+    font-size:14.5px; font-weight:500; cursor:pointer;
+    border-left:3px solid transparent;
+    transition:background .15s ease, color .15s ease;
+  }
+  .navbtn .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;background:currentColor;opacity:.55;}
+  .navbtn:hover{background:rgba(255,255,255,.06); color:#F4F3EC;}
+  .navbtn.active{background:rgba(255,255,255,.1); color:#fff;}
+  .navbtn.active .dot{opacity:1;}
+  .navbtn small{display:block; font-weight:400; font-size:11px; color:#8FA19C; margin-top:1px;}
+
+  .railfoot{font-size:10.5px; color:#7C8E89; padding:10px 12px 2px; border-top:1px solid rgba(255,255,255,.1); margin-top:10px;}
+  .railfoot b{color:#B8C6C1; font-weight:600;}
+
+  .stage{flex:1; min-width:0; padding:38px 44px 70px; max-width:1180px;}
+  .pane{display:none; animation:rise .35s ease;}
+  .pane.active{display:block;}
+  @keyframes rise{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;}}
+
+  .pane-head{margin-bottom:26px;}
+  .eyebrow-num{font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--tone); font-weight:500;}
+  .pane-head h2{font-size:30px; margin-top:4px;}
+  .pane-head p.lede{color:var(--ink-soft); font-size:14.5px; margin-top:8px; max-width:640px; line-height:1.55;}
+
+  #overview{--tone:var(--c-overview);}
+  #diagrams{--tone:var(--c-diagrams);}
+  #minimap{--tone:var(--c-map);}
+  #flashcards{--tone:var(--c-cards);}
+  #quiz{--tone:var(--c-quiz);}
+
+  /* ---------- Overview ---------- */
+  .rules-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:30px;}
+  .rule-card{
+    background:var(--paper-panel); border:1px solid var(--line); border-radius:var(--radius-m);
+    padding:16px 16px 15px; box-shadow:var(--shadow-1);
+    border-top:3px solid var(--c-overview);
+  }
+  .rule-card h4{font-size:14px; margin-bottom:6px;}
+  .rule-card p{font-size:13px; color:var(--ink-soft); line-height:1.5;}
+
+  .section-sub{font-size:16px; margin:30px 0 12px; padding-top:20px; border-top:1px solid var(--line);}
+
+  table.compare{width:100%; border-collapse:collapse; background:var(--paper-panel); border-radius:var(--radius-m); overflow:hidden; border:1px solid var(--line);}
+  table.compare th, table.compare td{padding:10px 14px; text-align:left; font-size:13px; border-bottom:1px solid var(--line);}
+  table.compare th{background:var(--c-overview-soft); color:var(--ink); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:.03em;}
+  table.compare tr:last-child td{border-bottom:none;}
+  table.compare td.label{font-weight:600; color:var(--c-overview);}
+
+  .aa-quick{display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-top:12px;}
+  .aa-quick-row{display:flex; gap:10px; align-items:flex-start; background:var(--paper-panel); border:1px solid var(--line); border-radius:var(--radius-s); padding:10px 12px;}
+  .aa-swatch{width:11px; height:11px; border-radius:3px; margin-top:3px; flex-shrink:0;}
+  .aa-quick-row b{font-size:13px; display:block;}
+  .aa-quick-row span{font-size:12.5px; color:var(--ink-soft);}
+
+  /* ---------- Diagrams ---------- */
+  .subtabs{display:flex; gap:8px; margin-bottom:22px; flex-wrap:wrap;}
+  .subtab{
+    padding:8px 14px; border-radius:20px; border:1px solid var(--line); background:var(--paper-panel);
+    font-size:13px; font-weight:500; cursor:pointer; color:var(--ink-soft);
+  }
+  .subtab.active{background:var(--c-diagrams); color:#fff; border-color:var(--c-diagrams);}
+  .subpane{display:none;}
+  .subpane.active{display:block;}
+
+  /* classification tree */
+  .tree{display:flex; flex-direction:column; align-items:center; gap:6px;}
+  .tree-row{display:flex; gap:14px; flex-wrap:wrap; justify-content:center;}
+  .tree-node{
+    background:var(--paper-panel); border:1.5px solid var(--line); border-radius:8px;
+    padding:9px 15px; font-size:13px; font-weight:600; cursor:pointer; color:var(--ink);
+    transition:transform .12s ease, border-color .12s ease;
+  }
+  .tree-node:hover{transform:translateY(-2px);}
+  .tree-node.root{background:var(--ink); color:#fff; border-color:var(--ink); cursor:default;}
+  .tree-node.branch{border-color:var(--c-diagrams); color:var(--c-diagrams);}
+  .tree-node.leaf.selected{background:var(--c-diagrams); color:#fff; border-color:var(--c-diagrams);}
+  .tree-node.leaf-b{border-color:var(--c-overview); color:var(--c-overview);}
+  .tree-node.leaf-b.selected{background:var(--c-overview); color:#fff; border-color:var(--c-overview);}
+  .tree-connector{width:1px; height:16px; background:var(--line);}
+
+  .tree-detail{
+    margin-top:22px; background:var(--paper-panel); border:1px solid var(--line); border-radius:var(--radius-m);
+    padding:18px 20px; min-height:76px; display:flex; align-items:center; gap:16px;
+  }
+  .tree-detail .ph{color:var(--ink-soft); font-size:13.5px;}
+  .tree-detail-badge{font-family:'IBM Plex Mono',monospace; font-size:11px; padding:3px 8px; border-radius:5px; flex-shrink:0;}
+
+  /* amino acid class chart */
+  .aa-chart{display:grid; grid-template-columns:repeat(3,1fr); gap:10px;}
+  .aa-class-card{
+    border-radius:var(--radius-m); padding:14px 16px; cursor:pointer; color:#fff;
+    transition:transform .12s ease;
+  }
+  .aa-class-card:hover{transform:translateY(-2px);}
+  .aa-class-card h4{font-size:14px; color:#fff;}
+  .aa-class-card .exlist{font-size:12px; margin-top:6px; opacity:.92; line-height:1.5;}
+  .aa-class-detail{
+    margin-top:16px; background:var(--paper-panel); border:1px solid var(--line); border-radius:var(--radius-m);
+    padding:16px 20px; font-size:13.5px; color:var(--ink-soft); line-height:1.6; display:none;
+    border-left:4px solid var(--tone);
+  }
+  .aa-class-detail.show{display:block;}
+  .aa-class-detail b{color:var(--ink);}
+
+  /* compare table expandable */
+  .expand-table{border:1px solid var(--line); border-radius:var(--radius-m); overflow:hidden; background:var(--paper-panel);}
+  .expand-row{border-bottom:1px solid var(--line);}
+  .expand-row:last-child{border-bottom:none;}
+  .expand-head{display:flex; align-items:center; justify-content:space-between; padding:13px 18px; cursor:pointer;}
+  .expand-head:hover{background:rgba(0,0,0,.02);}
+  .expand-head .nm{display:flex; align-items:center; gap:10px; font-weight:600; font-size:14px;}
+  .expand-head .tag{font-size:10.5px; font-weight:600; padding:2px 8px; border-radius:10px; text-transform:uppercase; letter-spacing:.02em;}
+  .tag.fat{background:var(--c-diagrams-soft); color:var(--c-diagrams);}
+  .tag.water{background:var(--c-overview-soft); color:var(--c-overview);}
+  .expand-arrow{font-size:12px; color:var(--ink-soft); transition:transform .15s ease;}
+  .expand-row.open .expand-arrow{transform:rotate(180deg);}
+  .expand-body{max-height:0; overflow:hidden; transition:max-height .2s ease;}
+  .expand-row.open .expand-body{max-height:160px;}
+  .expand-body-in{padding:0 18px 16px; display:grid; grid-template-columns:1fr 1fr; gap:12px; font-size:12.5px; color:var(--ink-soft);}
+  .expand-body-in div b{display:block; color:var(--ink); font-size:11px; text-transform:uppercase; letter-spacing:.03em; margin-bottom:3px;}
+
+  /* ---------- Mini map ---------- */
+  .map-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:10px;}
+  .map-pin{
+    background:var(--paper-panel); border:1px solid var(--line); border-radius:8px;
+    padding:11px 12px; cursor:pointer; font-size:13px; font-weight:600; text-align:left;
+    position:relative; padding-left:26px;
+  }
+  .map-pin::before{
+    content:''; position:absolute; left:11px; top:50%; transform:translateY(-50%);
+    width:7px; height:7px; border-radius:50%; background:var(--c-map);
+  }
+  .map-pin.active{background:var(--c-map); color:#fff; border-color:var(--c-map);}
+  .map-pin.active::before{background:#fff;}
+  .map-reveal{
+    margin-top:22px; background:var(--paper-panel); border:1px solid var(--line); border-radius:var(--radius-m);
+    padding:22px 24px; min-height:120px; border-left:4px solid var(--c-map);
+  }
+  .map-reveal h4{font-size:16px; margin-bottom:8px;}
+  .map-reveal p{font-size:14px; color:var(--ink-soft); line-height:1.6;}
+  .map-reveal .ph{color:#9AA9A4; font-size:13.5px;}
+
+  /* ---------- Flashcards ---------- */
+  .fc-toolbar{display:flex; align-items:center; gap:14px; margin-bottom:20px; flex-wrap:wrap;}
+  .fc-filter{display:flex; gap:6px; flex-wrap:wrap;}
+  .fc-chip{padding:6px 12px; border-radius:16px; border:1px solid var(--line); background:var(--paper-panel); font-size:12.5px; cursor:pointer; color:var(--ink-soft);}
+  .fc-chip.active{background:var(--c-cards); border-color:var(--c-cards); color:#fff;}
+  #quizLevelFilter .fc-chip.active{background:var(--c-quiz); border-color:var(--c-quiz);}
+  .fc-chip b{font-weight:700;}
+  .fc-count{font-size:12.5px; color:var(--ink-soft); margin-left:auto;}
+
+  .fc-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:14px;}
+  .fc-card{perspective:1000px; height:150px; cursor:pointer;}
+  .fc-inner{position:relative; width:100%; height:100%; transition:transform .5s cubic-bezier(.2,.8,.3,1); transform-style:preserve-3d;}
+  .fc-card.flipped .fc-inner{transform:rotateY(180deg);}
+  .fc-face{position:absolute; inset:0; backface-visibility:hidden; border-radius:10px; padding:14px; display:flex; flex-direction:column; box-shadow:var(--shadow-1);}
+  .fc-front{background:var(--paper-panel); border:1px solid var(--line); border-top:3px solid var(--fc-tone, var(--c-cards));}
+  .fc-back{background:var(--fc-tone, var(--c-cards)); color:#fff; transform:rotateY(180deg);}
+  .fc-tagline{font-size:9.5px; text-transform:uppercase; letter-spacing:.04em; font-weight:600; color:var(--fc-tone,var(--c-cards)); margin-bottom:8px;}
+  .fc-back .fc-tagline{color:rgba(255,255,255,.75);}
+  .fc-q, .fc-a{font-size:12.8px; line-height:1.42; flex:1; overflow:hidden;}
+  .fc-q{font-weight:600; color:var(--ink);}
+  .fc-a{color:#fff;}
+  .fc-hint{font-size:10px; color:#9AA9A4; margin-top:auto;}
+  .fc-back .fc-hint{color:rgba(255,255,255,.6);}
+
+  /* ---------- Quiz ---------- */
+  .quiz-top{display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:12px;}
+  .quiz-score{background:var(--paper-panel); border:1px solid var(--line); border-radius:8px; padding:8px 16px; font-size:13px; font-weight:600; display:flex; gap:16px;}
+  .quiz-score span.num{color:var(--c-quiz); font-family:'IBM Plex Mono', monospace;}
+  .btn{background:var(--ink); color:#fff; border:none; padding:9px 16px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer;}
+  .btn.ghost{background:transparent; color:var(--c-quiz); border:1px solid var(--c-quiz);}
+  .btn.tone{background:var(--c-quiz);}
+
+  .quiz-list{display:flex; flex-direction:column; gap:16px;}
+  .qcard{background:var(--paper-panel); border:1px solid var(--line); border-radius:var(--radius-m); padding:18px 20px;}
+  .qcard .qhead{display:flex; gap:10px; font-size:14px; font-weight:600; margin-bottom:12px;}
+  .qcard .qnum{color:var(--c-quiz); font-family:'IBM Plex Mono', monospace; font-size:13px; flex-shrink:0;}
+  .qopts{display:grid; grid-template-columns:1fr 1fr; gap:8px;}
+  .qopt{
+    border:1px solid var(--line); border-radius:8px; padding:9px 12px; font-size:13px; cursor:pointer;
+    background:#fff; transition:border-color .12s ease;
+  }
+  .qopt:hover{border-color:var(--c-quiz);}
+  .qopt.picked{border-color:var(--c-quiz); background:var(--c-quiz-soft);}
+  .qopt.correct{border-color:var(--c-map); background:var(--c-map-soft); font-weight:600;}
+  .qopt.wrong{border-color:var(--aa-acidic); background:#F8E3DE;}
+  .qopt.disabled{cursor:default;}
+
+  .quiz-footer{display:flex; justify-content:center; margin-top:26px;}
+
+  footer.pagefoot{text-align:center; padding:26px 0 6px; font-size:11.5px; color:#8B9A95;}
+
+  @media (max-width: 980px){
+    .rules-grid{grid-template-columns:repeat(2,1fr);}
+    .fc-grid{grid-template-columns:repeat(3,1fr);}
+    .aa-chart{grid-template-columns:repeat(2,1fr);}
+    .map-grid{grid-template-columns:repeat(3,1fr);}
+    .qopts{grid-template-columns:1fr;}
+  }
+  @media (max-width: 720px){
+    .app{flex-direction:column;}
+    .rail{width:100%; height:auto; position:relative; flex-direction:row; align-items:center; padding:14px 16px; overflow-x:auto;}
+    .brand{margin-bottom:0; margin-right:14px;}
+    .navlist{flex-direction:row;}
+    .navbtn small{display:none;}
+    .railfoot{display:none;}
+    .stage{padding:26px 18px 60px;}
+    .rules-grid{grid-template-columns:1fr;}
+    .fc-grid{grid-template-columns:repeat(2,1fr);}
+    .aa-chart{grid-template-columns:1fr;}
+    .map-grid{grid-template-columns:repeat(2,1fr);}
+    .expand-body-in{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="rail">
+    <div class="brand">
+      <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+        <polygon points="15,2 26,8.5 26,21.5 15,28 4,21.5 4,8.5" stroke="#EEF1EA" stroke-width="1.6"/>
+        <circle cx="15" cy="15" r="3" fill="#EEF1EA"/>
+      </svg>
+      <div class="brand-text">
+        <h1>Study Smart</h1>
+        <span>Vitamins &amp; Amino Acids</span>
+      </div>
+    </div>
+    <nav class="navlist" id="navlist">
+      <button class="navbtn active" data-target="overview" style="color:#F4F3EC;"><span class="dot" style="color:var(--c-overview)"></span>Overview<small>Key rules, fast</small></button>
+      <button class="navbtn" data-target="diagrams"><span class="dot" style="color:var(--c-diagrams)"></span>Diagrams<small>Trees, charts, tables</small></button>
+      <button class="navbtn" data-target="minimap"><span class="dot" style="color:var(--c-map)"></span>Mini Map<small>Click a title</small></button>
+      <button class="navbtn" data-target="flashcards"><span class="dot" style="color:var(--c-cards)"></span>Flash Cards<small id="fcCountNav">60 cards</small></button>
+      <button class="navbtn" data-target="quiz"><span class="dot" style="color:var(--c-quiz)"></span>Quiz Bank<small id="qCountNav">55 questions</small></button>
+    </nav>
+    <div class="railfoot">&copy; <b>Anmar Taha</b><br>All rights reserved.</div>
+  </aside>
+
+  <main class="stage">
+
+    <!-- ============ OVERVIEW ============ -->
+    <section id="overview" class="pane active">
+      <div class="pane-head">
+        <div class="eyebrow-num">01</div>
+        <h2>Overview</h2>
+        <p class="lede">The rules that actually matter, not a lecture. Read this once before you touch the flashcards or the quiz.</p>
+      </div>
+
+      <div class="rules-grid" id="rulesGrid"></div>
+
+      <h3 class="section-sub">Fat-soluble vs. water-soluble, at a glance</h3>
+      <table class="compare">
+        <thead><tr><th></th><th>Fat-soluble (A D E K)</th><th>Water-soluble (B-complex, C)</th></tr></thead>
+        <tbody id="compareBody"></tbody>
+      </table>
+
+      <h3 class="section-sub">Amino acid classes, at a glance</h3>
+      <div class="aa-quick" id="aaQuick"></div>
+    </section>
+
+    <!-- ============ DIAGRAMS ============ -->
+    <section id="diagrams" class="pane">
+      <div class="pane-head">
+        <div class="eyebrow-num">02</div>
+        <h2>Diagrams</h2>
+        <p class="lede">Every chart below responds to a click — branch through the classification, break down the amino acid classes, or open a vitamin's row for its full profile.</p>
+      </div>
+
+      <div class="subtabs">
+        <button class="subtab active" data-sub="tree">Classification map</button>
+        <button class="subtab" data-sub="aachart">Amino acid classes</button>
+        <button class="subtab" data-sub="table">Full comparison table</button>
+      </div>
+
+      <div class="subpane active" id="sub-tree">
+        <div class="tree" id="treeWrap"></div>
+        <div class="tree-detail" id="treeDetail"><p class="ph">Click any box above to see its details here.</p></div>
+      </div>
+
+      <div class="subpane" id="sub-aachart">
+        <div class="aa-chart" id="aaChart"></div>
+        <div class="aa-class-detail" id="aaDetail"></div>
+      </div>
+
+      <div class="subpane" id="sub-table">
+        <div class="expand-table" id="expandTable"></div>
+      </div>
+    </section>
+
+    <!-- ============ MINI MAP ============ -->
+    <section id="minimap" class="pane">
+      <div class="pane-head">
+        <div class="eyebrow-num">03</div>
+        <h2>Mini Map</h2>
+        <p class="lede">Every topic in the material, laid out as one grid. Click a title — the explanation opens right below, in this same section.</p>
+      </div>
+      <div class="map-grid" id="mapGrid"></div>
+      <div class="map-reveal" id="mapReveal"><p class="ph">Pick a title above to read its summary here.</p></div>
+    </section>
+
+    <!-- ============ FLASHCARDS ============ -->
+    <section id="flashcards" class="pane">
+      <div class="pane-head">
+        <div class="eyebrow-num">04</div>
+        <h2>Flash Cards</h2>
+        <p class="lede">Click a card to flip it. Pick a difficulty level, then filter by topic group to drill one part of the material at a time.</p>
+      </div>
+      <div class="fc-toolbar">
+        <div class="fc-filter" id="fcLevelFilter"></div>
+      </div>
+      <div class="fc-toolbar">
+        <div class="fc-filter" id="fcFilter"></div>
+        <div class="fc-count" id="fcCount"></div>
+      </div>
+      <div class="fc-grid" id="fcGrid"></div>
+    </section>
+
+    <!-- ============ QUIZ BANK ============ -->
+    <section id="quiz" class="pane">
+      <div class="pane-head">
+        <div class="eyebrow-num">05</div>
+        <h2>Quiz Bank</h2>
+        <p class="lede">Pick a difficulty level, then answer each question. The correct option sits in a different spot every time you load or reshuffle.</p>
+      </div>
+      <div class="quiz-top">
+        <div class="fc-filter" id="quizLevelFilter"></div>
+      </div>
+      <div class="quiz-top">
+        <div class="quiz-score">Score: <span class="num" id="scoreNum">0</span> / <span id="scoreTotal">55</span> &nbsp;·&nbsp; Answered: <span class="num" id="answeredNum">0</span></div>
+        <div style="display:flex; gap:10px;">
+          <button class="btn ghost" id="reshuffleBtn">Reshuffle quiz</button>
+          <button class="btn tone" id="checkAllBtn">Reveal all answers</button>
+        </div>
+      </div>
+      <div class="quiz-list" id="quizList"></div>
+    </section>
+
+    <footer class="pagefoot">Study Smart — Vitamins &amp; Amino Acids &nbsp;·&nbsp; &copy; Anmar Taha. All rights reserved.</footer>
+  </main>
+</div>
+
+<script>
+/* ============================================================
+   DATA
+   ============================================================ */
+
+const overviewRules = [
+  {t:"What is a vitamin", d:"An organic compound needed in small amounts for normal metabolism. The body can't make enough of it, so it must come from diet or supplements."},
+  {t:"The ADEK rule", d:"Fat-soluble vitamins are A, D, E and K — absorbed with dietary lipids and stored in tissues."},
+  {t:"Water-soluble role", d:"B-complex and C are water-soluble and mostly work as coenzymes or coenzyme precursors."},
+  {t:"What is an amino acid", d:"A molecule with at least one amino group (–NH2) and one carboxylic acid group (–COOH) on a central α-carbon."},
+  {t:"L-configuration rule", d:"Most biologically relevant amino acids are α-amino acids in the L-configuration."},
+  {t:"Proteinogenic vs non-protein", d:"Standard amino acids build proteins; non-protein amino acids (e.g. GABA) act as free metabolites with their own roles."}
+];
+
+const compareRows = [
+  ["Solubility","Dissolves in lipids","Dissolves in water"],
+  ["Storage","Stored in body tissues","Not significantly stored — needed regularly"],
+  ["Absorption","Absorbed together with dietary fat","Absorbed directly into the bloodstream"],
+  ["Typical role","Vision, bone health, antioxidant defense, clotting","Coenzymes / coenzyme precursors in metabolism"],
+  ["Members","A, D, E, K","B1, B2, B3, B5, B6, B7, B9, B12, C"]
+];
+
+const aaQuick = [
+  {c:"var(--aa-nonpolar)", n:"Nonpolar, aliphatic", ex:"Glycine, alanine, valine, leucine, isoleucine, proline — protein building blocks and energy source."},
+  {c:"var(--aa-aromatic)", n:"Aromatic", ex:"Phenylalanine, tyrosine, tryptophan — precursors of alkaloids, phenylpropanoids and neurotransmitters."},
+  {c:"var(--aa-polar)", n:"Polar, uncharged", ex:"Serine, threonine, asparagine, glutamine, cysteine, methionine — cofactors; cysteine feeds glutathione synthesis."},
+  {c:"var(--aa-acidic)", n:"Acidic", ex:"Aspartic acid, glutamic acid — nitrogen metabolism, neurotransmitter and alkaloid precursors."},
+  {c:"var(--aa-basic)", n:"Basic", ex:"Lysine, arginine, histidine — polyamine synthesis, nitrogen storage; histidine → histamine."},
+  {c:"var(--aa-special)", n:"Special / non-protein", ex:"GABA, ornithine, citrulline — plant stress responses, osmolytes, neurotransmitter precursors."}
+];
+
+// Vitamin master data
+const vitamins = [
+  {id:"A", group:"fat", name:"Vitamin A", alt:"Retinol, retinoids, carotenoids", role:"Vision (component of rhodopsin), growth, skin health, immune function", deficiency:"Night blindness, xerophthalmia, impaired immunity", source:"Carrots, sweet potato, spinach, mango, pumpkin"},
+  {id:"D", group:"fat", name:"Vitamin D", alt:"Calciferols (D2 ergocalciferol, D3 cholecalciferol)", role:"Calcium/phosphate homeostasis, bone health", deficiency:"Rickets (children), osteomalacia (adults)", source:"Sunlight-activated in skin; fortified foods, mushrooms, fish liver oil"},
+  {id:"E", group:"fat", name:"Vitamin E", alt:"Tocopherols, tocotrienols", role:"Antioxidant, protects cell membranes", deficiency:"Hemolytic anemia, neuropathy", source:"Wheat germ, nuts, seeds, spinach, sunflower oil"},
+  {id:"K", group:"fat", name:"Vitamin K", alt:"Phylloquinone, menaquinone", role:"Blood clotting (cofactor for γ-carboxylation of clotting factors)", deficiency:"Bleeding disorders", source:"Green leafy vegetables, broccoli, cabbage, fermented foods"},
+  {id:"B1", group:"water", name:"Vitamin B1", alt:"Thiamine", role:"Coenzyme in carbohydrate metabolism (TPP)", deficiency:"Beriberi, Wernicke-Korsakoff syndrome", source:"Whole grains, legumes, nuts, yeast"},
+  {id:"B2", group:"water", name:"Vitamin B2", alt:"Riboflavin", role:"Electron transport (FAD, FMN), energy metabolism", deficiency:"Cheilitis, glossitis, dermatitis", source:"Milk, eggs, green leafy vegetables"},
+  {id:"B3", group:"water", name:"Vitamin B3", alt:"Niacin, nicotinamide", role:"NAD/NADP coenzyme, energy metabolism", deficiency:"Pellagra (dermatitis, diarrhea, dementia)", source:"Legumes, nuts, grains, meat, yeast"},
+  {id:"B5", group:"water", name:"Vitamin B5", alt:"Pantothenic acid", role:"Coenzyme A synthesis, fatty acid metabolism", deficiency:"Rare; fatigue, irritability", source:"Whole grains, mushrooms, broccoli, egg yolk"},
+  {id:"B6", group:"water", name:"Vitamin B6", alt:"Pyridoxine, pyridoxal, pyridoxamine", role:"Amino acid metabolism, neurotransmitter synthesis", deficiency:"Dermatitis, depression, convulsions", source:"Banana, potato, chickpeas, fortified cereals"},
+  {id:"B7", group:"water", name:"Vitamin B7", alt:"Biotin", role:"Carboxylation reactions, fatty acid synthesis", deficiency:"Rare; hair loss, dermatitis", source:"Eggs, nuts, legumes, soybeans"},
+  {id:"B9", group:"water", name:"Vitamin B9", alt:"Folate, folic acid", role:"DNA/RNA synthesis, amino acid metabolism", deficiency:"Megaloblastic anemia, neural tube defects", source:"Green leafy vegetables, legumes, liver"},
+  {id:"B12", group:"water", name:"Vitamin B12", alt:"Cobalamin", role:"DNA synthesis, red blood cell formation, neurological function", deficiency:"Pernicious anemia, neuropathy", source:"Animal products: meat, liver, fish, eggs"},
+  {id:"C", group:"water", name:"Vitamin C", alt:"Ascorbic acid (C6H8O6)", role:"Antioxidant, collagen synthesis, iron absorption", deficiency:"Scurvy (bleeding gums, poor wound healing)", source:"Citrus fruits, guava, peppers, tomatoes"}
+];
+
+const aaClasses = [
+  {key:"nonpolar", color:"var(--aa-nonpolar)", name:"Nonpolar, aliphatic", examples:"Glycine, Alanine, Valine, Leucine, Isoleucine, Proline", feature:"Hydrocarbon side chains", role:"Protein building blocks and energy source; some (e.g. leucine) stimulate plant stress responses."},
+  {key:"aromatic", color:"var(--aa-aromatic)", name:"Aromatic", examples:"Phenylalanine, Tyrosine, Tryptophan", feature:"Benzene rings, indole (Trp)", role:"Precursors of alkaloids, phenylpropanoids, neurotransmitters; tyrosine → catecholamines, alkaloids."},
+  {key:"polar", color:"var(--aa-polar)", name:"Polar, uncharged", examples:"Serine, Threonine, Asparagine, Glutamine, Cysteine, Methionine", feature:"Hydroxyl, amide, thiol groups", role:"Cofactors in metabolism; sulfur amino acids feed glutathione synthesis; cysteine → plant defense compounds."},
+  {key:"acidic", color:"var(--aa-acidic)", name:"Acidic", examples:"Aspartic acid, Glutamic acid", feature:"Carboxyl groups", role:"Nitrogen metabolism, neurotransmitters; precursors for alkaloids."},
+  {key:"basic", color:"var(--aa-basic)", name:"Basic", examples:"Lysine, Arginine, Histidine", feature:"Amino or imidazole side chains", role:"Polyamine synthesis, nitrogen storage; histidine → histamine."},
+  {key:"special", color:"var(--aa-special)", name:"Special / non-protein", examples:"γ-Aminobutyric acid (GABA), Ornithine, Citrulline", feature:"Various", role:"Plant stress responses, secondary metabolite precursors, osmolytes and neurotransmitters."}
+];
+
+/* mini-map topics: vitamins + amino acid classes */
+const mapTopics = [
+  ...vitamins.map(v => ({title:v.name, text:`${v.alt}. Function: ${v.role}. Deficiency: ${v.deficiency}. Source: ${v.source}.`})),
+  ...aaClasses.map(a => ({title:a.name+" amino acids", text:`Examples: ${a.examples}. Structural feature: ${a.feature}. Role: ${a.role}`})),
+  {title:"Vitamin definition", text:"Organic compounds required in small amounts for normal metabolic functions; cannot be synthesized in sufficient quantities by humans, so must come from diet or supplements. They have diverse chemical structures — niacin is simple, cyanocobalamin (B12) is complex."},
+  {title:"Vitamin classification rule", text:"Vitamins are classified by solubility and biological function into fat-soluble (A, D, E, K) and water-soluble (B-complex and C) groups."},
+  {title:"Amino acid definition", text:"Amino acids are the monomeric units of proteins and also occur free in plants and microorganisms. They contain at least one amino group (–NH2) and one carboxylic acid group (–COOH) attached to a central α-carbon."},
+  {title:"Amino acids in pharmacognosy", text:"In plants, amino acids occur both free and as constituents of proteins and peptides. Free amino acids such as phenylalanine and tyrosine are precursors to natural products and secondary metabolites, e.g. phenylpropanoid compounds."}
+];
+
+/* ============================================================
+   FLASHCARD DATA — 3 difficulty levels
+   Level 1 / Easy   : 60 cards — direct, straightforward recall
+   Level 2 / Medium : 50 cards — needs a little synthesis/thinking
+   Level 3 / Hard    : 40 cards — deep, integrative reasoning
+   groups: fat, water, aa, general
+   ============================================================ */
+const fcEasy = [];
+vitamins.forEach(v=>{
+  fcEasy.push({g:v.group, q:`${v.name} — alternate name(s)?`, a:v.alt});
+  fcEasy.push({g:v.group, q:`${v.name} — main role?`, a:v.role});
+  fcEasy.push({g:v.group, q:`${v.name} — deficiency signs?`, a:v.deficiency});
+  fcEasy.push({g:v.group, q:`${v.name} — food source?`, a:v.source});
+});
+[
+  ["general","What is a vitamin, in simple terms?","An organic compound needed in small amounts for normal metabolism; the body can't make enough of it, so it must be obtained from the diet or supplements."],
+  ["general","Which letters represent the fat-soluble vitamins?","A, D, E, and K — the ADEK rule."],
+  ["general","Which vitamins make up the water-soluble group?","The B-complex vitamins (B1, B2, B3, B5, B6, B7, B9, B12) and vitamin C."],
+  ["water","What is the molecular formula of vitamin C?","C6H8O6."],
+  ["aa","What is an amino acid, in simple terms?","A molecule with at least one amino group (–NH2) and one carboxylic acid group (–COOH) attached to a central (α) carbon."],
+  ["aa","What configuration do most natural amino acids have?","The L-configuration, since most are α-amino acids with an asymmetric carbon."],
+  ["aa","Name one non-protein amino acid mentioned in the source.","γ-Aminobutyric acid (GABA)."],
+  ["aa","Which two amino acids are precursors of phenylpropanoid compounds?","Phenylalanine and tyrosine."]
+].forEach(c=> fcEasy.push({g:c[0], q:c[1], a:c[2]}));
+
+const fcMedium = [
+  ["water","Which coenzyme form does Vitamin B1 (thiamine) contribute to carbohydrate metabolism?","Thiamine pyrophosphate (TPP)."],
+  ["water","Which two coenzyme forms does Vitamin B2 (riboflavin) contribute to electron transport?","FAD and FMN."],
+  ["water","Which coenzyme system does Vitamin B3 (niacin) support in energy metabolism?","NAD/NADP."],
+  ["water","Which coenzyme does Vitamin B5 (pantothenic acid) help synthesize?","Coenzyme A (CoA)."],
+  ["fat","What are the two natural forms of vitamin D, and their origins?","D2 (ergocalciferol) and D3 (cholecalciferol); D3 is activated by sunlight in the skin."],
+  ["fat","What are the two chemical subclasses within vitamin E?","Tocopherols and tocotrienols."],
+  ["fat","What are the two chemical forms of vitamin K?","Phylloquinone and menaquinone."],
+  ["water","What are the three vitamer forms of vitamin B6?","Pyridoxine, pyridoxal, and pyridoxamine."],
+  ["general","Contrast how fat-soluble and water-soluble vitamins are absorbed.","Fat-soluble vitamins are absorbed together with dietary lipids; water-soluble vitamins are absorbed directly into the bloodstream."],
+  ["general","Contrast how fat-soluble and water-soluble vitamins are stored in the body.","Fat-soluble vitamins are stored in body tissues; water-soluble vitamins are not significantly stored and are needed regularly."],
+  ["general","Contrast the typical biological role of fat-soluble vs. water-soluble vitamins.","Fat-soluble vitamins support vision, bone health, antioxidant defense, and clotting; water-soluble vitamins mainly act as coenzymes or coenzyme precursors in metabolism."],
+  ["general","List the members of each vitamin solubility group.","Fat-soluble: A, D, E, K. Water-soluble: B1, B2, B3, B5, B6, B7, B9, B12, and C."],
+  ["fat","Why does a vitamin K deficiency cause bleeding disorders?","Because vitamin K is a required cofactor for the γ-carboxylation of clotting factors."],
+  ["fat","Why does vitamin A deficiency impair vision?","Because vitamin A (retinol) is a structural component of rhodopsin, the visual pigment."],
+  ["fat","Why does vitamin D deficiency affect bone health?","Because vitamin D maintains calcium/phosphate homeostasis, required for normal bone mineralization."],
+  ["fat","Why does vitamin E deficiency cause hemolytic anemia?","Because vitamin E acts as an antioxidant that protects red blood cell membranes from oxidative damage."],
+  ["water","Why does vitamin B1 deficiency affect the nervous system, as in Wernicke-Korsakoff syndrome?","Because thiamine (as TPP) is required for carbohydrate metabolism, critical for neuronal energy supply."],
+  ["water","Why does vitamin B12 deficiency cause both anemia and neuropathy?","Because B12 is required for both DNA synthesis/red blood cell formation and normal neurological function."],
+  ["water","Why does vitamin B9 (folate) deficiency cause neural tube defects?","Because folate is required for DNA/RNA synthesis and amino acid metabolism, essential during rapid fetal cell division."],
+  ["water","Why does vitamin C deficiency (scurvy) impair wound healing?","Because vitamin C is required for collagen synthesis, a key structural protein in wound repair."],
+  ["general","What distinguishes niacin from cyanocobalamin (B12) in chemical complexity?","Niacin is a relatively simple molecule, whereas cyanocobalamin (vitamin B12) is structurally complex."],
+  ["general","Where are vitamins naturally found, and how are they discussed in pharmacognosy?","In plant and animal products; in pharmacognosy they are discussed as natural constituents of medicinal plants or as dietary supplements."],
+  ["general","How can herbs and plant sources be characterized nutritionally in pharmacognosy?","By their vitamin content, as part of their nutraceutical/phytochemical profiles."],
+  ["aa","In plants, in what two forms do amino acids occur?","In the free state, and as constituents of proteins and peptides."],
+  ["aa","Give an example of free amino acids acting as precursors to secondary metabolites.","Phenylalanine and tyrosine, which are precursors of phenylpropanoid compounds."],
+  ["aa","Name two standard proteinogenic amino acids mentioned as examples of general chemical properties.","Any two of: alanine, leucine, valine, lysine, serine."],
+  ["aa","What structural feature defines the nonpolar, aliphatic amino acid class?","Hydrocarbon side chains."],
+  ["aa","What structural feature defines the aromatic amino acid class?","Benzene rings (and an indole ring in tryptophan)."],
+  ["aa","What structural features define the polar, uncharged amino acid class?","Hydroxyl, amide, or thiol groups."],
+  ["aa","What structural feature defines the acidic amino acid class?","Carboxyl groups on the side chain."],
+  ["aa","What structural feature defines the basic amino acid class?","Amino or imidazole side chains."],
+  ["aa","Which amino acid class is described as having 'various' structural features?","The special/non-protein amino acids (e.g. GABA, ornithine, citrulline)."],
+  ["aa","Which sulfur-containing amino acid is specifically tied to glutathione synthesis and plant defense compounds?","Cysteine."],
+  ["aa","Which basic amino acid is a direct precursor of histamine?","Histidine."],
+  ["aa","Which aromatic amino acid is converted into catecholamines and alkaloids?","Tyrosine."],
+  ["aa","What is the general pharmacognostic role of the basic amino acid class?","Polyamine synthesis and nitrogen storage."],
+  ["aa","What is the general pharmacognostic role of the acidic amino acid class?","Nitrogen metabolism and acting as neurotransmitters/precursors for alkaloids."],
+  ["aa","What is the general pharmacognostic role of the special/non-protein amino acid class?","Plant stress responses, secondary metabolite precursors, osmolytes, and neurotransmitters."],
+  ["aa","Which amino acid class contains an indole ring, and in which amino acid?","The aromatic class, in tryptophan."],
+  ["water","Which vitamin's deficiency profile includes three organ systems — skin, gut, and brain?","Vitamin B3 (niacin) — pellagra causes dermatitis, diarrhea, and dementia."],
+  ["fat","Vitamin A's alternate names include both 'retinoids' and what other term?","Carotenoids."],
+  ["water","Besides folic acid, what is the other common name for vitamin B9?","Folate."],
+  ["water","Besides niacin, what is the other common name for vitamin B3?","Nicotinamide."],
+  ["general","Why is cyanocobalamin (B12) singled out as complex, given most vitamins are described as diverse in structure?","It illustrates that structural diversity spans from simple molecules (like niacin) to complex ones within the same vitamin group."],
+  ["aa","How does the classification of amino acids mirror the classification of vitamins in this material?","Both are classified according to structural/chemical features that determine their biological or metabolic role — vitamins by solubility, amino acids by side-chain chemistry."],
+  ["water","Which two water-soluble vitamins act as coenzymes in energy metabolism via electron transport or redox reactions?","Vitamin B2 (FAD/FMN) and vitamin B3 (NAD/NADP)."],
+  ["fat","Which fat-soluble vitamin's role is tied to an enzymatic carboxylation reaction rather than classic redox coenzyme chemistry?","Vitamin K, as a cofactor for γ-carboxylation of clotting factors."],
+  ["water","Which water-soluble vitamin plays a distinct dual role in both amino acid metabolism and neurotransmitter synthesis?","Vitamin B6 (pyridoxine)."],
+  ["general","According to the source, which biological roles are shared broadly across all water-soluble vitamins?","Acting as coenzymes or coenzyme precursors in energy metabolism, amino acid metabolism, and redox processes."],
+  ["general","According to the source, which biological roles are shared broadly across all fat-soluble vitamins?","Vision (A), calcium metabolism (D), antioxidant protection (E), and blood clotting (K)."]
+].map(c=>({g:c[0], q:c[1], a:c[2]}));
+
+const fcHard = [
+  ["general","Both folate (B9) and B12 deficiency cause megaloblastic anemia. What additional feature distinguishes B12 deficiency specifically?","Neurological impairment/neuropathy, since B12 — unlike folate — is also required for neurological function."],
+  ["water","Beriberi (B1 deficiency) and pellagra (B3 deficiency) both stem from disrupted energy-metabolism coenzymes. Contrast their coenzyme roles.","B1 acts as TPP in carbohydrate metabolism; B3 acts as NAD/NADP in broader energy metabolism redox reactions."],
+  ["fat","Rickets and osteomalacia are both caused by vitamin D deficiency. What distinguishes them?","Rickets occurs in children (growing bone), while osteomalacia occurs in adults — the same underlying calcium/phosphate defect at different life stages."],
+  ["water","Vitamin B2 and B3 are both water-soluble coenzymes in energy metabolism, but act through different carriers. Name each.","B2 acts via FAD/FMN (electron transport); B3 acts via NAD/NADP."],
+  ["general","The source contrasts niacin and cyanocobalamin as examples of diverse vitamin structure. Explain the contrast.","Niacin (a B3 form) is a relatively simple molecule, while cyanocobalamin (B12) is a large, complex molecule — illustrating structural diversity within the vitamin group."],
+  ["aa","Tyrosine and phenylalanine are both aromatic amino acids, but the source lists distinct downstream roles for each. What are they?","Together they are precursors of phenylpropanoid compounds; tyrosine specifically is further converted into catecholamines and alkaloids."],
+  ["aa","Histidine (basic) and tyrosine (aromatic) both give rise to biogenic amines. Which class does each belong to, and which amine does each produce?","Histidine (basic) forms histamine; tyrosine (aromatic) forms catecholamines (and alkaloids)."],
+  ["aa","Of GABA, ornithine, and citrulline, which is illustrated with a structural diagram in the source, and what does this suggest?","GABA (γ-aminobutyric acid) — its explicit structure suggests it is the representative example of this class."],
+  ["aa","Cysteine and methionine are both polar, sulfur-containing amino acids. What distinct role does the source attribute only to cysteine?","Cysteine specifically feeds glutathione synthesis and plant defense compounds; methionine is not given this specific role."],
+  ["general","Vitamin A and vitamin D are both fat-soluble but target different systems. Name each vitamin's key target and chemical forms.","Vitamin A (retinoids/carotenoids) targets vision (rhodopsin); vitamin D (calciferols: D2, D3) targets calcium/phosphate homeostasis and bone."],
+  ["fat","Vitamin E's two subclasses (tocopherols, tocotrienols) both serve the antioxidant role. Where specifically does this action occur?","At cell membranes, protecting them from oxidative damage."],
+  ["fat","Vitamin K's two forms (phylloquinone, menaquinone) converge on one function. What is it?","Both act as a cofactor for the γ-carboxylation of clotting factors, essential for blood clotting."],
+  ["water","Vitamin B6's three vitamers converge on which two functional roles?","Amino acid metabolism and neurotransmitter synthesis."],
+  ["aa","Tryptophan is structurally distinct from phenylalanine and tyrosine within the aromatic class. How?","Tryptophan contains an indole ring, whereas phenylalanine and tyrosine contain benzene rings."],
+  ["aa","How does the list of standard proteinogenic amino acids (alanine, leucine, valine, lysine, serine) differ in scope from the non-protein list (GABA)?","Proteinogenic amino acids are incorporated into proteins, while non-protein amino acids like GABA exist as free metabolites with specialized roles rather than being built into proteins."],
+  ["aa","Explain how the source connects free amino acid occurrence in plants to secondary metabolite biosynthesis, with an example.","Free amino acids can be precursors to natural products and secondary metabolites — phenylalanine and tyrosine specifically feed phenylpropanoid biosynthesis."],
+  ["general","Contrast the absorption-storage-role triad for fat-soluble vs. water-soluble vitamins as one unified rationale.","Fat-soluble vitamins are absorbed with dietary lipids and stored in tissues due to their lipophilic nature, supporting roles like vision and clotting; water-soluble vitamins are absorbed directly into blood and not stored, consistent with continuous coenzyme roles."],
+  ["water","Both B5 and B7 deficiencies are described as 'rare'. What symptoms and coenzyme roles are given for each?","B5 (CoA synthesis) deficiency causes fatigue and irritability; B7 (carboxylation reactions) deficiency causes hair loss and dermatitis."],
+  ["general","Vitamin C and vitamin E are both called 'antioxidants,' yet act in different environments. Explain.","Vitamin E (fat-soluble) protects lipid cell membranes, while vitamin C (water-soluble) acts in aqueous environments, alongside collagen synthesis and iron absorption."],
+  ["aa","Acidic and basic amino acids are structurally opposite yet both tied to nitrogen functions. Explain each class's specific role.","Acidic amino acids (Asp, Glu) support nitrogen metabolism and neurotransmitter/alkaloid precursor roles; basic amino acids (Lys, Arg, His) support polyamine synthesis and nitrogen storage."],
+  ["general","Why might the source classify vitamins by both solubility and biological function rather than solubility alone?","Solubility predicts absorption/storage behavior, while biological function explains physiological necessity — the two axes are complementary."],
+  ["water","Explain why deficiency in a coenzyme-precursor vitamin like B1 or B3 produces widespread, multi-system symptoms.","Because these vitamins are coenzymes in core energy metabolism pathways used by nearly all cells, deficiency impairs energy production broadly (e.g. neurological in Wernicke-Korsakoff; dermatologic/GI/neurological in pellagra)."],
+  ["aa","Contrast the pharmacognostic significance of 'bound' versus 'free' amino acids in plants.","Bound amino acids are structural/functional units of proteins and peptides, while free amino acids act as precursors to secondary metabolites (e.g. phenylpropanoids) or, like GABA, have direct roles of their own."],
+  ["general","Herbs can be characterized by vitamin content as part of nutraceutical/phytochemical profiles. What does this imply?","Vitamins are also treated as bioactive phytochemical markers used to characterize medicinal plants, not merely as dietary nutrients."],
+  ["water","B9 and B12 are both essential for DNA-related processes. Specify each vitamin's precise DNA-related function.","B9 (folate) supports DNA/RNA synthesis and amino acid metabolism; B12 (cobalamin) supports DNA synthesis, red blood cell formation, and neurological function."],
+  ["fat","Explain, using structure-function logic, why fat-soluble vitamins as a group require dietary lipids for absorption.","Their lipophilic structures (retinoids, calciferols, tocopherols, quinones) must be incorporated into lipid micelles for intestinal absorption, unlike the water-compatible B-complex/C vitamins."],
+  ["aa","Explain why aromatic amino acids form a distinct class from nonpolar aliphatic amino acids, even though both are largely hydrophobic.","Aromatic amino acids are distinguished by benzene/indole ring systems that give them unique roles as precursors of alkaloids, phenylpropanoids, and neurotransmitters — functions not attributed to the hydrocarbon-chain nonpolar aliphatic class."],
+  ["aa","How does grouping methionine with serine, threonine, asparagine, cysteine, and glutamine as 'polar, uncharged' reflect a mix of structural features?","This class is unified by several different polar-but-uncharged features — hydroxyl (Ser, Thr), amide (Asn, Gln), and thiol (Cys, Met) groups."],
+  ["general","Compare the deficiency severity for B3 (pellagra) versus B5 (rare, mild). What does this suggest about relative essentiality?","The severe, well-defined pellagra syndrome suggests a critical, non-redundant metabolic role for B3, while the rare, mild B5 deficiency suggests greater dietary availability or metabolic redundancy."],
+  ["water","Which two vitamins are tied to red blood cell pathology on deficiency, and how do the mechanisms differ?","Vitamin B12 (pernicious anemia, via impaired DNA synthesis/red cell formation) and vitamin E (hemolytic anemia, via loss of membrane antioxidant protection) — a synthesis defect versus a membrane-protection defect."],
+  ["aa","Explain why phenylalanine and tyrosine are grouped together despite tyrosine's extra hydroxyl group.","Both share the aromatic benzene backbone and both feed phenylpropanoid biosynthesis, but tyrosine's extra hydroxyl allows the additional role of forming catecholamines and alkaloids."],
+  ["general","Contrast the biological-role statements for fat-soluble vs. water-soluble vitamins. What kind of roles does each specialize in?","Fat-soluble vitamins specialize in discrete, structural/regulatory physiological functions; water-soluble vitamins specialize in broad, catalytic (coenzyme) support of core metabolic pathways."],
+  ["aa","Ornithine and citrulline are grouped as special/non-protein amino acids. What broader roles does the source assign to this class?","Plant stress responses, secondary metabolite precursors, osmolytes, and neurotransmitters."],
+  ["general","How does vitamin C's three roles (antioxidant, collagen synthesis, iron absorption) show one vitamin can serve multiple mechanisms?","Vitamin C acts as a redox-active antioxidant, an essential cofactor for collagen synthesis, and a reducing agent that enhances iron absorption — three distinct mechanisms in one molecule."],
+  ["fat","Compare the biochemical basis of vitamin A's role in vision with vitamin D's role in bone health.","Vitamin A acts as a direct structural component of rhodopsin, whereas vitamin D acts more indirectly, regulating calcium/phosphate homeostasis needed for bone mineralization."],
+  ["aa","Explain why the amino acid classification uses side-chain chemistry rather than size or charge alone.","Side-chain chemistry (hydrocarbon, aromatic ring, hydroxyl/amide/thiol, carboxyl, amino/imidazole) most directly determines both physicochemical behavior and metabolic/pharmacognostic role."],
+  ["general","What does a plant extract rich in both niacin-like simple vitamins and cobalamin-like complex vitamins indicate about vitamin structural diversity?","It confirms that vitamins as a class span a wide range of chemical complexity, despite all being classified under the single functional term 'vitamin.'"],
+  ["water","Explain the shared and distinct aspects of B2 and B6 in relation to amino acid/energy metabolism.","B2 supports energy metabolism broadly via FAD/FMN; B6 has a more specific role in amino acid metabolism and neurotransmitter synthesis — both are coenzyme-type B vitamins acting on different metabolic axes."],
+  ["aa","How would you justify classifying glycine under 'nonpolar, aliphatic' amino acids despite lacking a bulky side chain?","Glycine's side chain is a single hydrogen atom — nonpolar and non-aromatic — placing it, by the hydrocarbon criterion, into the nonpolar aliphatic group alongside alanine, valine, leucine, isoleucine, and proline."],
+  ["general","Synthesize the overall logic connecting vitamin classification and amino acid classification into one unifying principle.","Both are grouped by structural/chemical properties (solubility for vitamins; side-chain chemistry for amino acids) that predict absorption, storage, or reactivity, which in turn explain their distinct biological and pharmacognostic roles."]
+].map(c=>({g:c[0], q:c[1], a:c[2]}));
+
+const flashcardsByLevel = {easy:fcEasy, medium:fcMedium, hard:fcHard};
+const fcLevels = [
+  {key:'easy', label:'Level 1 · Easy', n:fcEasy.length},
+  {key:'medium', label:'Level 2 · Medium', n:fcMedium.length},
+  {key:'hard', label:'Level 3 · Hard', n:fcHard.length}
+];
+let fcActiveLevel = 'easy';
+
+/* ============================================================
+   QUIZ DATA — 3 difficulty levels. Index 0 of each option list
+   is always the correct answer, before shuffling.
+   Level 1 / Easy   : 60 MCQs — direct, straightforward recall
+   Level 2 / Medium : 50 MCQs — needs a little synthesis/thinking
+   Level 3 / Hard    : 40 MCQs — deep, integrative reasoning
+   ============================================================ */
+const quizEasy = [
+["Which class of vitamins is absorbed with dietary lipids and stored in tissues?",["Fat-soluble vitamins","Water-soluble vitamins","Amino acids","Non-protein vitamins"]],
+["Which vitamins belong to the fat-soluble group?",["A, D, E, K","B-complex and C","A, B, C","D, E, B12"]],
+["Water-soluble vitamins mainly function as:",["Coenzymes or coenzyme precursors","Structural lipids","Hormones only","Antibodies"]],
+["Which vitamin is a component of rhodopsin and important for vision?",["Vitamin A","Vitamin D","Vitamin K","Vitamin B12"]],
+["Deficiency of Vitamin A causes:",["Night blindness and xerophthalmia","Rickets","Scurvy","Pellagra"]],
+["A good food source of Vitamin A is:",["Carrots","Citrus fruits","Fermented foods","Fortified cereals"]],
+["Vitamin D is also known as:",["Calciferol","Retinoid","Tocopherol","Phylloquinone"]],
+["Vitamin D deficiency in children causes:",["Rickets","Scurvy","Beriberi","Pellagra"]],
+["Vitamin D deficiency in adults causes:",["Osteomalacia","Xerophthalmia","Megaloblastic anemia","Hemolytic anemia"]],
+["Vitamin D is naturally activated by:",["Sunlight exposure on skin","Gut bacteria fermentation","Liver oxidation only","Kidney filtration only"]],
+["Vitamin E is also known as:",["Tocopherol","Calciferol","Retinoid","Menaquinone"]],
+["The main function of Vitamin E is:",["Antioxidant protecting cell membranes","Blood clotting cofactor","Calcium homeostasis","Collagen synthesis"]],
+["Vitamin E deficiency can cause:",["Hemolytic anemia and neuropathy","Beriberi","Pellagra","Scurvy"]],
+["A rich source of Vitamin E is:",["Sunflower oil","Citrus fruits","Animal liver","Legumes"]],
+["Vitamin K is essential as a cofactor for:",["γ-carboxylation of clotting factors","DNA synthesis","Collagen synthesis","Electron transport"]],
+["Vitamin K deficiency leads to:",["Bleeding disorders","Night blindness","Rickets","Pernicious anemia"]],
+["Vitamin K is found abundantly in:",["Green leafy vegetables","Citrus fruits","Fish liver oil","Whole grains"]],
+["Vitamin B1 is also known as:",["Thiamine","Riboflavin","Niacin","Biotin"]],
+["Vitamin B1 acts as a coenzyme in the form of:",["TPP in carbohydrate metabolism","FAD in electron transport","NAD in redox reactions","Coenzyme A in fat metabolism"]],
+["Deficiency of Vitamin B1 causes:",["Beriberi and Wernicke-Korsakoff syndrome","Pellagra","Scurvy","Megaloblastic anemia"]],
+["Vitamin B2 is also known as:",["Riboflavin","Thiamine","Pantothenic acid","Folate"]],
+["Vitamin B2 functions as part of:",["FAD and FMN in electron transport","TPP in carbohydrate metabolism","Coenzyme A in fat metabolism","NAD only"]],
+["Deficiency of Vitamin B2 causes:",["Cheilitis, glossitis, and dermatitis","Rickets","Beriberi","Scurvy"]],
+["Vitamin B3 is also known as:",["Niacin","Biotin","Pyridoxine","Cobalamin"]],
+["Vitamin B3 deficiency causes:",["Pellagra (dermatitis, diarrhea, dementia)","Beriberi","Rickets","Xerophthalmia"]],
+["Vitamin B3 functions as a coenzyme in the form of:",["NAD/NADP","TPP","FAD","Coenzyme A"]],
+["Vitamin B5 is also known as:",["Pantothenic acid","Niacin","Folate","Biotin"]],
+["Vitamin B5 is essential for the synthesis of:",["Coenzyme A","Rhodopsin","Collagen","Hemoglobin"]],
+["Vitamin B6 is also known as:",["Pyridoxine","Thiamine","Riboflavin","Cobalamin"]],
+["Vitamin B6 plays a major role in:",["Amino acid metabolism and neurotransmitter synthesis","Blood clotting","Calcium absorption","Fatty acid oxidation only"]],
+["Deficiency of Vitamin B6 causes:",["Dermatitis, depression, convulsions","Scurvy","Rickets","Pernicious anemia"]],
+["Vitamin B7 is also known as:",["Biotin","Folate","Niacin","Pantothenic acid"]],
+["Vitamin B7 is essential for:",["Carboxylation reactions and fatty acid synthesis","Electron transport","DNA synthesis","Vision"]],
+["Vitamin B9 is also known as:",["Folic acid (folate)","Biotin","Cobalamin","Niacin"]],
+["Deficiency of Vitamin B9 causes:",["Megaloblastic anemia and neural tube defects","Beriberi","Rickets","Hemolytic anemia"]],
+["Vitamin B12 is also known as:",["Cobalamin","Riboflavin","Pyridoxine","Ascorbic acid"]],
+["Vitamin B12 deficiency causes:",["Pernicious anemia and neuropathy","Pellagra","Scurvy","Rickets"]],
+["A Vitamin B12 food source must come from:",["Animal products","Citrus fruits","Green leafy vegetables only","Whole grains only"]],
+["Vitamin C is chemically known as:",["Ascorbic acid","Retinoic acid","Folic acid","Pantothenic acid"]],
+["Deficiency of Vitamin C causes:",["Scurvy","Rickets","Beriberi","Pellagra"]],
+["Vitamin C plays a key role in:",["Collagen synthesis and iron absorption","Blood clotting","Calcium homeostasis","Vision"]],
+["The molecular formula of Vitamin C is:",["C6H8O6","C20H30O","C63H88CoN14O14P","C12H17NO4S"]],
+["An amino acid contains at minimum:",["One amino group and one carboxylic acid group on a central carbon","Two amino groups only","A benzene ring","A phosphate group"]],
+["Naturally occurring amino acids are mostly in which configuration?",["L-configuration","D-configuration","Racemic mixture","No fixed configuration"]],
+["Which class includes glycine, alanine, valine, leucine, isoleucine, and proline?",["Nonpolar, aliphatic amino acids","Aromatic amino acids","Acidic amino acids","Basic amino acids"]],
+["Which class includes phenylalanine, tyrosine, and tryptophan?",["Aromatic amino acids","Basic amino acids","Polar uncharged amino acids","Nonpolar aliphatic amino acids"]],
+["Aromatic amino acids are precursors of:",["Alkaloids, phenylpropanoids, and neurotransmitters","Blood clotting factors","Vitamins","Nucleic acids only"]],
+["Which class includes serine, threonine, asparagine, glutamine, cysteine, and methionine?",["Polar, uncharged amino acids","Acidic amino acids","Basic amino acids","Special/non-protein amino acids"]],
+["Cysteine is essential for the synthesis of:",["Glutathione","Rhodopsin","Coenzyme A","Hemoglobin"]],
+["Aspartic acid and glutamic acid belong to which class?",["Acidic amino acids","Basic amino acids","Aromatic amino acids","Nonpolar amino acids"]],
+["Lysine, arginine, and histidine belong to which class?",["Basic amino acids","Acidic amino acids","Polar uncharged amino acids","Special/non-protein amino acids"]],
+["Histidine can be converted into:",["Histamine","Serotonin","Dopamine","Melatonin"]],
+["GABA (γ-aminobutyric acid) is an example of:",["A non-protein amino acid","A standard proteinogenic amino acid","An aromatic amino acid","A fat-soluble vitamin"]],
+["Besides GABA, which are other special/non-protein amino acids mentioned?",["Ornithine and citrulline","Lysine and arginine","Serine and threonine","Alanine and valine"]],
+["Phenylalanine and tyrosine serve as precursors for:",["Phenylpropanoid compounds","Blood clotting factors","Bile acids","Steroid hormones only"]],
+["Vitamin A is also known, besides retinoids, as:",["Carotenoids","Tocopherols","Calciferols","Quinones"]],
+["Vitamin K is also known, besides phylloquinone, as:",["Menaquinone","Ergocalciferol","Tocotrienol","Nicotinamide"]],
+["Which best defines a vitamin?",["An organic compound needed in small amounts for normal metabolism that the body cannot make enough of","A mineral required for bone health","A synthetic drug used to treat infections","A type of protein enzyme"]],
+["Vitamin B5 deficiency is described in the source as:",["Rare; causing fatigue and irritability","Common; causing scurvy","Common; causing rickets","Rare; causing night blindness"]],
+["Vitamin B7 deficiency is described in the source as:",["Rare; causing hair loss and dermatitis","Common; causing pellagra","Rare; causing bleeding disorders","Common; causing megaloblastic anemia"]]
+];
+
+const quizMedium = [
+["Which coenzyme form is directly associated with Vitamin B1 in carbohydrate metabolism?",["Thiamine pyrophosphate (TPP)","FAD","NAD+","Coenzyme A"]],
+["Vitamin B2 contributes to electron transport as which coenzyme pair?",["FAD and FMN","NAD and NADP","TPP and CoA","Retinal and retinol"]],
+["Vitamin B3 functions in energy metabolism mainly as:",["NAD/NADP","FAD/FMN","TPP","Coenzyme A"]],
+["Pantothenic acid (B5) is essential for synthesizing:",["Coenzyme A","NADP","FAD","TPP"]],
+["The two natural forms of vitamin D are:",["Ergocalciferol (D2) and cholecalciferol (D3)","Retinol and retinal","Tocopherol and tocotrienol","Phylloquinone and menaquinone"]],
+["Vitamin E includes which two chemical subclasses?",["Tocopherols and tocotrienols","Calciferols and retinoids","Quinones and naphthoquinones","Pyridoxine and pyridoxal"]],
+["Vitamin K exists naturally in which two forms?",["Phylloquinone and menaquinone","Ergocalciferol and cholecalciferol","Retinol and carotenoid","Thiamine and riboflavin"]],
+["Which three vitamers together make up vitamin B6?",["Pyridoxine, pyridoxal, pyridoxamine","Thiamine, riboflavin, niacin","Folate, cobalamin, biotin","Retinol, retinal, retinoic acid"]],
+["Compared with water-soluble vitamins, fat-soluble vitamins are absorbed:",["Together with dietary lipids","Directly into the bloodstream without fat","Only through active transport pumps","Exclusively in the large intestine"]],
+["Unlike water-soluble vitamins, fat-soluble vitamins are:",["Stored in body tissues","Excreted immediately if in excess","Never found in animal products","Only active as coenzymes"]],
+["Which statement best differentiates the general roles of fat- vs. water-soluble vitamins?",["Fat-soluble vitamins support vision, bone health, antioxidant defense, and clotting, while water-soluble vitamins mainly act as coenzymes","Fat-soluble vitamins are all coenzymes, while water-soluble vitamins support vision and clotting","Both groups have identical biological roles","Water-soluble vitamins are stored, fat-soluble vitamins are not"]],
+["Which of the following is a complete, correct list of the water-soluble vitamins in this material?",["B1, B2, B3, B5, B6, B7, B9, B12, C","A, D, E, K, C","B1, B2, B3, B12 only","B6, B9, B12, D"]],
+["Vitamin K deficiency causes bleeding disorders because vitamin K is required for:",["γ-carboxylation of clotting factors","Collagen cross-linking","Rhodopsin regeneration","Calcium absorption in the gut"]],
+["Vitamin A supports vision because it is a structural component of:",["Rhodopsin","Collagen","Hemoglobin","Myelin"]],
+["Vitamin D deficiency impairs bone health primarily through disrupted:",["Calcium/phosphate homeostasis","Collagen cross-linking","Clotting factor synthesis","Iron absorption"]],
+["Vitamin E prevents hemolytic anemia mainly through its role as:",["An antioxidant protecting red cell membranes","A clotting cofactor","A coenzyme in the citric acid cycle","A precursor for hemoglobin synthesis"]],
+["Wernicke-Korsakoff syndrome results from a deficiency of:",["Vitamin B1 (thiamine)","Vitamin B12","Vitamin B6","Vitamin B3"]],
+["Vitamin B12 deficiency uniquely produces both anemia and neuropathy because B12 is required for:",["DNA synthesis/red blood cell formation and neurological function","Blood clotting and vision","Collagen synthesis and calcium absorption","Fatty acid synthesis only"]],
+["Folate (B9) deficiency during pregnancy is specifically linked to:",["Neural tube defects","Rickets","Night blindness","Bleeding disorders"]],
+["Vitamin C deficiency impairs wound healing chiefly because vitamin C is required for:",["Collagen synthesis","Blood clotting factor activation","Calcium absorption","Nerve myelination"]],
+["According to the source, which vitamin is described as a relatively simple molecule?",["Niacin","Cyanocobalamin","Riboflavin","Retinol"]],
+["In pharmacognosy, vitamins found in plant and animal products are often discussed as:",["Natural constituents of medicinal plants or dietary supplements","Synthetic pharmaceutical excipients only","Byproducts of alkaloid biosynthesis","Structural components of cell walls"]],
+["Herbs can be characterized nutritionally, as part of their nutraceutical/phytochemical profiles, by their:",["Vitamin content","DNA sequence","Mineral toxicity","Water content only"]],
+["In plants, amino acids occur:",["Both free and as constituents of proteins/peptides","Only bound within proteins","Only in the free state","Only in seeds"]],
+["Phenylalanine and tyrosine, in their free state, act as precursors of:",["Phenylpropanoid compounds","Retinoids","Nucleotides","Fatty acids"]],
+["Which pair below are both standard proteinogenic amino acids listed in the source's general properties section?",["Alanine and lysine","GABA and ornithine","Citrulline and GABA","Retinol and tocopherol"]],
+["The nonpolar, aliphatic amino acid class is defined structurally by:",["Hydrocarbon side chains","Benzene rings","Thiol groups","Imidazole rings"]],
+["The aromatic amino acid class is defined structurally by:",["Benzene rings, with an indole ring in tryptophan","Hydrocarbon side chains only","Carboxyl groups","Amino or imidazole side chains"]],
+["The polar, uncharged amino acid class is defined structurally by:",["Hydroxyl, amide, or thiol groups","Benzene rings","Carboxyl groups","Imidazole rings"]],
+["The acidic amino acid class is defined structurally by:",["Carboxyl groups","Hydroxyl groups","Indole rings","Amino/imidazole groups"]],
+["The basic amino acid class is defined structurally by:",["Amino or imidazole side chains","Carboxyl groups","Thiol groups","Hydrocarbon chains only"]],
+["Which amino acid class is described as having 'various' structural features rather than one consistent group?",["Special/non-protein amino acids","Acidic amino acids","Basic amino acids","Aromatic amino acids"]],
+["Cysteine's thiol group makes it essential for the synthesis of:",["Glutathione","Histamine","Rhodopsin","Coenzyme A"]],
+["Histidine, a basic amino acid, is a direct metabolic precursor of:",["Histamine","Serotonin","Dopamine","Melanin"]],
+["Tyrosine, an aromatic amino acid, is a precursor of:",["Catecholamines and alkaloids","Histamine","Glutathione","Polyamines"]],
+["The basic amino acid class is generally associated with:",["Polyamine synthesis and nitrogen storage","Antioxidant defense","Blood clotting","Vision"]],
+["The acidic amino acid class is generally associated with:",["Nitrogen metabolism and neurotransmitter/alkaloid precursor roles","Polyamine synthesis","Fatty acid synthesis","Blood clotting"]],
+["The special/non-protein amino acid class is generally associated with:",["Plant stress responses, secondary metabolite precursors, osmolytes, and neurotransmitters","Collagen synthesis","Blood clotting","Vision"]],
+["Which amino acid contains an indole ring, distinguishing it within the aromatic class?",["Tryptophan","Phenylalanine","Tyrosine","Histidine"]],
+["Pellagra, caused by vitamin B3 deficiency, uniquely affects which three systems together?",["Skin, gut, and brain (dermatitis, diarrhea, dementia)","Eyes, bone, and blood","Skin and blood only","Bone and nerve only"]],
+["Besides retinoids, vitamin A is also known by the term:",["Carotenoids","Tocopherols","Calciferols","Quinones"]],
+["Besides folic acid, vitamin B9 is also known as:",["Folate","Biotin","Niacin","Cobalamin"]],
+["Besides niacin, vitamin B3 is also known as:",["Nicotinamide","Pantothenic acid","Pyridoxine","Riboflavin"]],
+["The source highlights cyanocobalamin (B12) as structurally complex to illustrate that:",["Vitamins have diverse chemical structures, ranging from simple (niacin) to complex (B12)","All vitamins share one universal structure","Only water-soluble vitamins are complex","Complexity determines solubility"]],
+["The classification logic used for amino acids in this source parallels that used for vitamins in that both are grouped by:",["Structural/chemical features linked to biological role","Country of dietary origin","Molecular weight only","Color of the crystalline form"]],
+["Which two water-soluble vitamins act specifically as electron-transport/redox coenzymes?",["Vitamin B2 and vitamin B3","Vitamin B6 and vitamin B9","Vitamin B7 and vitamin B12","Vitamin C and vitamin B5"]],
+["Unlike most other vitamins that act as classic redox coenzymes, vitamin K instead functions as a cofactor for:",["γ-carboxylation reactions","Electron transport","Carboxylic acid decarboxylation","Deamination reactions"]],
+["Vitamin B6 is distinct among B-vitamins for its dual role in:",["Amino acid metabolism and neurotransmitter synthesis","Blood clotting and vision","Calcium absorption and bone growth","DNA synthesis and red cell formation only"]],
+["Which statement best summarizes the biological roles shared by water-soluble vitamins as a group?",["They function as coenzymes or coenzyme precursors in energy metabolism, amino acid metabolism, and redox processes","They are all stored in adipose tissue","They all cause bleeding disorders when deficient","They are all structural components of cell membranes"]],
+["Which statement best summarizes the biological roles shared by fat-soluble vitamins as a group?",["Vision (A), calcium metabolism (D), antioxidant protection (E), and blood clotting (K)","DNA synthesis, red cell formation, and clotting","Amino acid metabolism, redox processes, and energy metabolism","Collagen synthesis, iron absorption, and wound healing"]]
+];
+
+const quizHard = [
+["Both folate and B12 deficiency cause megaloblastic anemia. Which additional feature is specific to B12 deficiency?",["Neuropathy (pernicious anemia)","Neural tube defects","Rickets","Bleeding disorders"]],
+["Beriberi and pellagra both arise from disrupted energy-metabolism coenzymes. Which vitamin/coenzyme pair is correctly matched to beriberi?",["Vitamin B1 / TPP","Vitamin B3 / NAD","Vitamin B2 / FAD","Vitamin B5 / CoA"]],
+["Rickets and osteomalacia share the same underlying deficiency but differ by:",["Age group affected (children vs. adults)","Which vitamin is deficient","Whether calcium or phosphate is involved","Whether the source is sunlight or diet"]],
+["Which pairing of water-soluble vitamin to its energy-metabolism coenzyme carrier is correct?",["Vitamin B2 → FAD/FMN","Vitamin B1 → NAD/NADP","Vitamin B3 → TPP","Vitamin B5 → FAD"]],
+["The source's contrast between niacin and cyanocobalamin (B12) is meant to illustrate:",["The structural diversity across the vitamin class","That only water-soluble vitamins are complex","That simple vitamins are less essential","That complexity determines deficiency severity"]],
+["Phenylalanine and tyrosine share a common downstream role, but tyrosine alone has an additional one. What is it?",["Precursor of catecholamines and alkaloids","Precursor of phenylpropanoids","Component of glutathione","Precursor of histamine"]],
+["Histidine and tyrosine both form biogenic amines. Which class-amine pairing is correct?",["Histidine (basic) → histamine; tyrosine (aromatic) → catecholamines","Histidine (aromatic) → catecholamines; tyrosine (basic) → histamine","Both are acidic amino acids forming neurotransmitters","Both are non-protein amino acids forming GABA"]],
+["Among GABA, ornithine, and citrulline, which is explicitly shown with a chemical structure in the source, suggesting it is the representative special/non-protein amino acid?",["GABA","Ornithine","Citrulline","None of the three"]],
+["Cysteine and methionine share a structural class, but only one is explicitly linked to glutathione synthesis and plant defense. Which one?",["Cysteine","Methionine","Both equally","Neither"]],
+["Vitamin A and vitamin D are both fat-soluble but target different systems. Which pairing is correct?",["Vitamin A → vision; Vitamin D → calcium/phosphate homeostasis","Vitamin A → clotting; Vitamin D → antioxidant defense","Vitamin A → bone health; Vitamin D → vision","Vitamin A → calcium homeostasis; Vitamin D → vision"]],
+["Tocopherols and tocotrienols, the two subclasses of vitamin E, converge on which specific protective site?",["Cell membranes","Bone matrix","Clotting factors","DNA strands"]],
+["Phylloquinone and menaquinone, the two forms of vitamin K, converge on which biochemical function?",["γ-carboxylation of clotting factors","Electron transport in the mitochondria","Calcium absorption in the gut","Collagen cross-linking"]],
+["Pyridoxine, pyridoxal, and pyridoxamine — the three vitamers of B6 — converge on which two functional roles?",["Amino acid metabolism and neurotransmitter synthesis","DNA synthesis and red blood cell formation","Blood clotting and vision","Fatty acid synthesis and carboxylation"]],
+["What structurally distinguishes tryptophan from phenylalanine and tyrosine within the aromatic amino acid class?",["An indole ring instead of a benzene ring","An extra carboxyl group","A thiol group","An imidazole ring"]],
+["How does the source distinguish standard proteinogenic amino acids from non-protein amino acids like GABA?",["Proteinogenic amino acids build proteins; non-protein amino acids act as free metabolites with specialized roles","Proteinogenic amino acids are only found in animals; non-protein amino acids only in plants","Non-protein amino acids are always acidic","Proteinogenic amino acids cannot be L-configured"]],
+["Which statement correctly links free amino acid occurrence in plants to secondary metabolite biosynthesis?",["Phenylalanine and tyrosine, in the free state, are precursors of phenylpropanoid compounds","All free amino acids form alkaloids exclusively","Bound amino acids, not free ones, form secondary metabolites","Only non-protein amino acids can act as biosynthetic precursors"]],
+["Which best explains why fat-soluble vitamins are stored in tissues while water-soluble vitamins are not?",["Their lipophilic chemical structure allows storage with body fat, unlike the more water-compatible B-complex/C vitamins","Fat-soluble vitamins are consumed in larger amounts","Water-soluble vitamins are toxic if stored","Storage capacity depends only on dietary intake, not chemistry"]],
+["Both vitamin B5 and B7 deficiencies are described as rare. Which symptom set correctly matches each?",["B5: fatigue, irritability; B7: hair loss, dermatitis","B5: hair loss, dermatitis; B7: fatigue, irritability","Both cause pellagra-like symptoms","Both cause megaloblastic anemia"]],
+["Vitamin C and vitamin E are both described as antioxidants, but they act in different environments. Which is correct?",["Vitamin E protects lipid cell membranes; vitamin C acts in aqueous environments alongside collagen synthesis","Vitamin C protects lipid membranes; vitamin E supports collagen synthesis","Both act exclusively within cell membranes","Both act exclusively in the bloodstream plasma"]],
+["Acidic and basic amino acids have opposite side-chain chemistry, yet both relate to nitrogen. Which correctly pairs class to nitrogen-related role?",["Acidic → nitrogen metabolism/neurotransmitter precursors; Basic → polyamine synthesis/nitrogen storage","Acidic → nitrogen storage; Basic → nitrogen metabolism","Both perform identical nitrogen roles","Neither class relates to nitrogen metabolism"]],
+["Why does the source classify vitamins by both solubility and biological function rather than solubility alone?",["Solubility predicts absorption/storage, while biological function explains physiological necessity — the two are complementary","Biological function alone determines solubility","Solubility is irrelevant to vitamin classification","Function and solubility always align perfectly, making one classification redundant"]],
+["Why do deficiencies of coenzyme-precursor B-vitamins like B1 or B3 tend to cause multi-system symptoms?",["Because these coenzymes support core energy metabolism used broadly by nearly all cells","Because these vitamins are toxic in small amounts","Because they only affect the digestive system","Because they replace hormones throughout the body"]],
+["How does the source contrast the pharmacognostic significance of bound versus free amino acids in plants?",["Bound amino acids are structural protein/peptide units, while free amino acids can act as secondary-metabolite precursors or have direct roles like GABA","Bound amino acids act as neurotransmitters, free amino acids build proteins","Both bound and free amino acids serve identical roles","Only free amino acids exist in plants"]],
+["What does the mention of herbs being characterized by 'vitamin content as part of nutraceutical/phytochemical profiles' imply?",["Vitamins are also used as bioactive markers for evaluating medicinal plants, not just as dietary nutrients","Vitamins are irrelevant to pharmacognosy","Only synthetic vitamins are studied in pharmacognosy","Phytochemical profiles exclude vitamins by definition"]],
+["Which statement correctly differentiates the precise DNA-related roles of B9 and B12?",["B9 supports DNA/RNA synthesis and amino acid metabolism; B12 supports DNA synthesis, red blood cell formation, and neurological function","B9 supports neurological function only; B12 supports amino acid metabolism only","Both support identical roles with no distinction","Neither vitamin is linked to DNA synthesis"]],
+["Which best explains, using structure-function logic, why fat-soluble vitamins require dietary lipids for absorption?",["Their lipophilic structures (retinoids, calciferols, tocopherols, quinones) must be incorporated into lipid micelles for intestinal uptake","They are chemically identical to water-soluble vitamins in polarity","They are absorbed directly into the bloodstream like B-vitamins","Lipid dependency is unrelated to their chemical structure"]],
+["Why are aromatic amino acids classified separately from nonpolar aliphatic amino acids despite both being hydrophobic?",["Their benzene/indole ring systems give them unique roles as precursors of alkaloids, phenylpropanoids, and neurotransmitters","They differ only in molecular weight","Nonpolar aliphatic amino acids are always basic","Aromatic amino acids cannot occur in proteins"]],
+["The 'polar, uncharged' amino acid class includes serine, threonine, asparagine, glutamine, cysteine, and methionine. What unifies this diverse group?",["They share polar but electrically uncharged functional groups (hydroxyl, amide, or thiol)","They all contain benzene rings","They are all acidic in nature","They all form clotting factors"]],
+["Comparing the severe, multi-symptom pellagra (B3 deficiency) to the rare, mild B5 deficiency suggests:",["B3 plays a more critical, non-redundant metabolic role than B5","B5 is more essential than B3","Both vitamins are equally critical","Neither vitamin's deficiency has clinical consequences"]],
+["Which two vitamins are both linked to red blood cell pathology on deficiency, though through different mechanisms?",["Vitamin B12 (synthesis defect, pernicious anemia) and vitamin E (membrane-protection defect, hemolytic anemia)","Vitamin A and vitamin D","Vitamin B1 and vitamin B6","Vitamin C and vitamin K"]],
+["Why are phenylalanine and tyrosine grouped together pharmacognostically despite tyrosine's extra hydroxyl group?",["Both share the aromatic benzene backbone and funnel into phenylpropanoid biosynthesis, with tyrosine gaining an additional catecholamine/alkaloid role","They differ completely in structure and have no shared pathway","Only phenylalanine forms phenylpropanoids","Only tyrosine is an aromatic amino acid"]],
+["Comparing the stated biological roles, fat-soluble vitamins specialize in ___, while water-soluble vitamins specialize in ___.",["discrete structural/regulatory functions; broad catalytic (coenzyme) support of metabolism","broad catalytic coenzyme support; discrete structural functions","identical roles; there is no meaningful difference","toxin neutralization; hormone synthesis"]],
+["GABA, ornithine, and citrulline (special/non-protein amino acids) are collectively linked to which set of roles?",["Plant stress responses, secondary metabolite precursors, osmolytes, and neurotransmitters","Blood clotting and vision","DNA synthesis and red cell formation","Collagen synthesis and iron absorption"]],
+["Vitamin C's three distinct biochemical roles (antioxidant, collagen synthesis, iron absorption) illustrate that:",["A single vitamin can serve multiple, mechanistically distinct biochemical functions","Vitamin C only has one true biological role","All three roles use the same molecular mechanism","Vitamin C's roles overlap entirely with vitamin E's"]],
+["Comparing vitamin A and vitamin D's mechanisms, which is correct?",["Vitamin A is a direct structural component of rhodopsin; vitamin D regulates calcium/phosphate homeostasis in a more hormone-like manner","Vitamin A acts hormone-like; vitamin D is a structural pigment component","Both act identically as structural pigment components","Neither has a defined mechanism in the source"]],
+["Why does the amino acid classification system rely on side-chain chemistry rather than size or charge alone?",["Side-chain chemistry most directly determines both physicochemical behavior and specific metabolic/pharmacognostic role","Size alone perfectly predicts amino acid function","Charge is irrelevant to amino acid classification","All amino acids have identical side-chain chemistry"]],
+["A plant extract containing both niacin-like simple vitamins and cobalamin-like complex vitamins best illustrates:",["The wide range of chemical complexity spanned by the vitamin class despite shared functional classification","That all vitamins must be structurally simple","That complex vitamins cannot occur naturally","That solubility alone determines complexity"]],
+["Comparing B2 and B6, which statement correctly distinguishes their metabolic axes?",["B2 supports broad energy metabolism via FAD/FMN; B6 specifically supports amino acid metabolism and neurotransmitter synthesis","B2 and B6 perform identical functions","B6 supports electron transport; B2 supports amino acid metabolism","Neither vitamin acts as a coenzyme"]],
+["Why is glycine classified under 'nonpolar, aliphatic' amino acids despite having minimal side-chain bulk?",["Its side chain is a single hydrogen atom, which is nonpolar and non-aromatic, fitting the hydrocarbon-based criterion of that class","Glycine has a benzene ring like other aromatic amino acids","Glycine's side chain contains a carboxyl group, making it acidic","Glycine is classified as basic due to its amino group"]],
+["Which statement best synthesizes the overall classification logic shared by vitamins and amino acids in this material?",["Both are grouped by structural/chemical properties (solubility; side-chain chemistry) that predict their absorption, storage, or reactivity, and this explains their distinct biological roles","Vitamins are grouped by cost, amino acids by size","Both are classified purely by their dietary source","There is no shared classification logic between the two"]]
+];
+
+const quizByLevel = {easy:quizEasy, medium:quizMedium, hard:quizHard};
+const quizLevels = [
+  {key:'easy', label:'Level 1 · Easy', n:quizEasy.length},
+  {key:'medium', label:'Level 2 · Medium', n:quizMedium.length},
+  {key:'hard', label:'Level 3 · Hard', n:quizHard.length}
+];
+let quizActiveLevel = 'easy';
+
+/* ============================================================
+   RENDER: helpers
+   ============================================================ */
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+/* ---- Overview ---- */
+function renderOverview(){
+  const rg = document.getElementById('rulesGrid');
+  rg.innerHTML = overviewRules.map(r=>`<div class="rule-card"><h4>${r.t}</h4><p>${r.d}</p></div>`).join('');
+
+  const cb = document.getElementById('compareBody');
+  cb.innerHTML = compareRows.map(r=>`<tr><td class="label">${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('');
+
+  const aq = document.getElementById('aaQuick');
+  aq.innerHTML = aaQuick.map(a=>`
+    <div class="aa-quick-row">
+      <div class="aa-swatch" style="background:${a.c}"></div>
+      <div><b>${a.n}</b><span>${a.ex}</span></div>
+    </div>`).join('');
+}
+
+/* ---- Diagrams: classification tree ---- */
+let treeSelected = null;
+function renderTree(){
+  const wrap = document.getElementById('treeWrap');
+  const fatLeaves = vitamins.filter(v=>v.group==='fat').map(v=>`<button class="tree-node leaf" data-id="${v.id}">${v.name}</button>`).join('');
+  const waterLeaves = vitamins.filter(v=>v.group==='water').map(v=>`<button class="tree-node leaf leaf-b" data-id="${v.id}">${v.name.replace('Vitamin ','')}</button>`).join('');
+  wrap.innerHTML = `
+    <div class="tree-node root">Vitamins</div>
+    <div class="tree-connector"></div>
+    <div class="tree-row">
+      <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+        <div class="tree-node branch">Fat-soluble</div>
+        <div class="tree-connector"></div>
+        <div class="tree-row">${fatLeaves}</div>
+      </div>
+      <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+        <div class="tree-node branch" style="border-color:var(--c-overview); color:var(--c-overview);">Water-soluble</div>
+        <div class="tree-connector"></div>
+        <div class="tree-row">${waterLeaves}</div>
+      </div>
+    </div>`;
+  wrap.querySelectorAll('.leaf').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      wrap.querySelectorAll('.leaf').forEach(b=>b.classList.remove('selected'));
+      btn.classList.add('selected');
+      const v = vitamins.find(x=>x.id===btn.dataset.id);
+      showTreeDetail(v);
+    });
+  });
+}
+function showTreeDetail(v){
+  const box = document.getElementById('treeDetail');
+  const badgeColor = v.group==='fat' ? 'var(--c-diagrams)' : 'var(--c-overview)';
+  const badgeBg = v.group==='fat' ? 'var(--c-diagrams-soft)' : 'var(--c-overview-soft)';
+  box.innerHTML = `
+    <div class="tree-detail-badge" style="background:${badgeBg}; color:${badgeColor};">${v.group==='fat'?'FAT-SOLUBLE':'WATER-SOLUBLE'}</div>
+    <div>
+      <h4 style="font-size:15px; margin-bottom:4px;">${v.name} <span style="font-weight:400; color:var(--ink-soft); font-size:13px;">— ${v.alt}</span></h4>
+      <p style="font-size:13px; color:var(--ink-soft); line-height:1.5;"><b style="color:var(--ink)">Role:</b> ${v.role} &nbsp;·&nbsp; <b style="color:var(--ink)">Deficiency:</b> ${v.deficiency} &nbsp;·&nbsp; <b style="color:var(--ink)">Source:</b> ${v.source}</p>
+    </div>`;
+}
+
+/* ---- Diagrams: amino acid class chart ---- */
+function renderAaChart(){
+  const chart = document.getElementById('aaChart');
+  chart.innerHTML = aaClasses.map(c=>`
+    <div class="aa-class-card" data-key="${c.key}" style="background:${c.color};">
+      <h4>${c.name}</h4>
+      <div class="exlist">${c.examples}</div>
+    </div>`).join('');
+  const detail = document.getElementById('aaDetail');
+  chart.querySelectorAll('.aa-class-card').forEach(card=>{
+    card.addEventListener('click', ()=>{
+      const c = aaClasses.find(x=>x.key===card.dataset.key);
+      detail.style.borderLeftColor = c.color;
+      detail.innerHTML = `<b>${c.name}</b> — structural feature: ${c.feature}.<br><br><b>Examples:</b> ${c.examples}<br><br><b>Role:</b> ${c.role}`;
+      detail.classList.add('show');
+    });
+  });
+}
+
+/* ---- Diagrams: expandable full table ---- */
+function renderExpandTable(){
+  const table = document.getElementById('expandTable');
+  table.innerHTML = vitamins.map(v=>`
+    <div class="expand-row" data-id="${v.id}">
+      <div class="expand-head">
+        <div class="nm">${v.name} <span class="tag ${v.group}">${v.group==='fat'?'Fat-soluble':'Water-soluble'}</span></div>
+        <div class="expand-arrow">▾</div>
+      </div>
+      <div class="expand-body">
+        <div class="expand-body-in">
+          <div><b>Alternate name</b>${v.alt}</div>
+          <div><b>Main role</b>${v.role}</div>
+          <div><b>Deficiency</b>${v.deficiency}</div>
+          <div><b>Food source</b>${v.source}</div>
+        </div>
+      </div>
+    </div>`).join('');
+  table.querySelectorAll('.expand-row').forEach(row=>{
+    row.querySelector('.expand-head').addEventListener('click', ()=>{
+      row.classList.toggle('open');
+    });
+  });
+}
+
+/* ---- Mini map ---- */
+function renderMiniMap(){
+  const grid = document.getElementById('mapGrid');
+  grid.innerHTML = mapTopics.map((t,i)=>`<button class="map-pin" data-i="${i}">${t.title}</button>`).join('');
+  const reveal = document.getElementById('mapReveal');
+  grid.querySelectorAll('.map-pin').forEach(pin=>{
+    pin.addEventListener('click', ()=>{
+      grid.querySelectorAll('.map-pin').forEach(p=>p.classList.remove('active'));
+      pin.classList.add('active');
+      const t = mapTopics[pin.dataset.i];
+      reveal.innerHTML = `<h4>${t.title}</h4><p>${t.text}</p>`;
+    });
+  });
+}
+
+/* ---- Flashcards ---- */
+const fcGroups = [
+  {key:'all', label:'All'},
+  {key:'fat', label:'Fat-soluble'},
+  {key:'water', label:'Water-soluble'},
+  {key:'aa', label:'Amino acids'}
+];
+let fcActiveGroup = 'all';
+function renderFcLevelFilter(){
+  const el = document.getElementById('fcLevelFilter');
+  el.innerHTML = fcLevels.map(l=>`<button class="fc-chip ${l.key===fcActiveLevel?'active':''}" data-lvl="${l.key}">${l.label} <b>(${l.n})</b></button>`).join('');
+  el.querySelectorAll('.fc-chip').forEach(chip=>{
+    chip.addEventListener('click', ()=>{
+      fcActiveLevel = chip.dataset.lvl;
+      renderFcLevelFilter();
+      renderFcGrid();
+    });
+  });
+}
+function renderFcFilter(){
+  const el = document.getElementById('fcFilter');
+  el.innerHTML = fcGroups.map(g=>`<button class="fc-chip ${g.key===fcActiveGroup?'active':''}" data-g="${g.key}">${g.label}</button>`).join('');
+  el.querySelectorAll('.fc-chip').forEach(chip=>{
+    chip.addEventListener('click', ()=>{
+      fcActiveGroup = chip.dataset.g;
+      renderFcFilter();
+      renderFcGrid();
+    });
+  });
+}
+function toneFor(g){
+  if(g==='fat') return 'var(--c-diagrams)';
+  if(g==='water') return 'var(--c-overview)';
+  if(g==='aa') return 'var(--c-cards)';
+  return 'var(--c-quiz)';
+}
+function renderFcGrid(){
+  const grid = document.getElementById('fcGrid');
+  const levelCards = flashcardsByLevel[fcActiveLevel];
+  const list = fcActiveGroup==='all' ? levelCards : levelCards.filter(c=>c.g===fcActiveGroup);
+  document.getElementById('fcCount').textContent = `${list.length} cards shown`;
+  grid.innerHTML = list.map((c,i)=>`
+    <div class="fc-card" data-i="${i}">
+      <div class="fc-inner" style="--fc-tone:${toneFor(c.g)}">
+        <div class="fc-face fc-front">
+          <div class="fc-tagline">Question</div>
+          <div class="fc-q">${c.q}</div>
+          <div class="fc-hint">Tap to flip</div>
+        </div>
+        <div class="fc-face fc-back">
+          <div class="fc-tagline">Answer</div>
+          <div class="fc-a">${c.a}</div>
+          <div class="fc-hint">Tap to flip back</div>
+        </div>
+      </div>
+    </div>`).join('');
+  grid.querySelectorAll('.fc-card').forEach(card=>{
+    card.addEventListener('click', ()=> card.classList.toggle('flipped'));
+  });
+}
+
+/* ---- Quiz ---- */
+let quizState = [];
+function renderQuizLevelFilter(){
+  const el = document.getElementById('quizLevelFilter');
+  el.innerHTML = quizLevels.map(l=>`<button class="fc-chip ${l.key===quizActiveLevel?'active':''}" data-lvl="${l.key}">${l.label} <b>(${l.n})</b></button>`).join('');
+  el.querySelectorAll('.fc-chip').forEach(chip=>{
+    chip.addEventListener('click', ()=>{
+      quizActiveLevel = chip.dataset.lvl;
+      renderQuizLevelFilter();
+      buildQuiz();
+      renderQuiz();
+    });
+  });
+}
+function buildQuiz(){
+  const quizRaw = quizByLevel[quizActiveLevel];
+  quizState = quizRaw.map((q,idx)=>{
+    const correctText = q[1][0];
+    const opts = shuffle(q[1]);
+    return {idx, question:q[0], options:opts, correctText, picked:null};
+  });
+}
+function renderQuiz(){
+  const list = document.getElementById('quizList');
+  list.innerHTML = quizState.map((q,qi)=>`
+    <div class="qcard" data-qi="${qi}">
+      <div class="qhead"><span class="qnum">Q${qi+1}</span><span>${q.question}</span></div>
+      <div class="qopts">
+        ${q.options.map((opt,oi)=>`<div class="qopt" data-oi="${oi}">${opt}</div>`).join('')}
+      </div>
+    </div>`).join('');
+  list.querySelectorAll('.qcard').forEach(card=>{
+    const qi = +card.dataset.qi;
+    card.querySelectorAll('.qopt').forEach(opt=>{
+      opt.addEventListener('click', ()=>{
+        const q = quizState[qi];
+        if(q.picked !== null) return;
+        const oi = +opt.dataset.oi;
+        q.picked = oi;
+        markCard(card, q);
+        updateScore();
+      });
+    });
+  });
+  updateScore();
+}
+function markCard(card, q){
+  card.querySelectorAll('.qopt').forEach((el,oi)=>{
+    el.classList.add('disabled');
+    if(q.options[oi] === q.correctText) el.classList.add('correct');
+    else if(oi === q.picked) el.classList.add('wrong');
+  });
+}
+function updateScore(){
+  const answered = quizState.filter(q=>q.picked!==null);
+  const correct = answered.filter(q=>q.options[q.picked]===q.correctText);
+  document.getElementById('scoreNum').textContent = correct.length;
+  document.getElementById('answeredNum').textContent = answered.length;
+  document.getElementById('scoreTotal').textContent = quizState.length;
+}
+document.getElementById('reshuffleBtn').addEventListener('click', ()=>{
+  buildQuiz();
+  renderQuiz();
+});
+document.getElementById('checkAllBtn').addEventListener('click', ()=>{
+  document.querySelectorAll('.qcard').forEach(card=>{
+    const qi = +card.dataset.qi;
+    const q = quizState[qi];
+    if(q.picked === null) q.picked = -1;
+    markCard(card, q);
+  });
+  updateScore();
+});
+
+/* ============================================================
+   NAV
+   ============================================================ */
+document.querySelectorAll('.navbtn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.navbtn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active'));
+    document.getElementById(btn.dataset.target).classList.add('active');
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+});
+document.querySelectorAll('.subtab').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.subtab').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.subpane').forEach(p=>p.classList.remove('active'));
+    document.getElementById('sub-'+btn.dataset.sub).classList.add('active');
+  });
+});
+
+/* ============================================================
+   INIT
+   ============================================================ */
+renderOverview();
+renderTree();
+renderAaChart();
+renderExpandTable();
+renderMiniMap();
+renderFcLevelFilter();
+renderFcFilter();
+renderFcGrid();
+renderQuizLevelFilter();
+buildQuiz();
+renderQuiz();
+const fcTotal = fcEasy.length + fcMedium.length + fcHard.length;
+const qTotal = quizEasy.length + quizMedium.length + quizHard.length;
+document.getElementById('fcCountNav').textContent = fcTotal + ' cards · 3 levels';
+document.getElementById('qCountNav').textContent = qTotal + ' questions · 3 levels';
+</script>
+</body>
+</html>
